@@ -1,5 +1,27 @@
 \chapter{Warsaw WAN}
 
+\section{Site Overview}
+The Warsaw site is one of the three main locations in the \ac{RECOMP} Corporation architecture. His structure includes the following key components:
+\begin{itemize}
+    \item Tree core multilayer switches (3560-24PS model).
+    \item One router (2901 model).
+    \item Four layer 2 switches (2960-24TT model).
+    \item  Four PCs representing each of the networks (STAFF, ACCOUNTING, HR, USERS).
+    \end{itemize}
+
+
+The topology of the warsaw site is illustrated in Figure~\ref{fig:warsaw-topology}, showcasing the interconnections between the core switches, router, layer 2 switches, and PCs.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/warsaw-topology.png}
+    \caption{Warsaw Site Topology}
+    \label{fig:warsaw-topology}
+\end{figure}
+
+
+
+\section{IP Addressing Scheme}
 The Warsaw network architecture is built upon a structured IP plan. The following tables detail the VLAN subnets and the specific IP addresses assigned to core network devices.
 
 \section{VLAN Subnet Allocation}
@@ -25,29 +47,33 @@ HR & 30 & 192.168.163.64 & /27 & 192.168.163.65 -- 192.168.163.94 & 192.168.163.
 \label{tab:warsaw-vlan}
 \end{table}
 
+As the figure \ref{fig:warsaw-addressing} shows, the VLANs were designed to accommodate the minimum number of hosts required, also with additional capacity for future growth.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/warsaw-addressing.png}
+    \caption{Warsaw IP Addressing Scheme}
+    \label{fig:warsaw-addressing}
+\end{figure}    
 
 \section{Core Device Interface Assignments}
 
-Static IP addresses were assigned to core multilayer switch (MLS) interfaces for routing and inter-device communication.
-
+Static IP addresses were assigned to core multilayer switch (MLS) interfaces for routing.
 \begin{table}[h!]
 \centering
 \caption{Core Device Interface Assignments}
 \begin{tabular}{|l|l|c|}
 \hline
 \textbf{Device} & \textbf{Interface} & \textbf{IP Address / Mask} \\
+
 \hline
-\multirow{2}{*}{MLS3} & Port-channel 1 & 192.168.163.81 /30 \\
-                      & Port-channel 2 & 192.168.163.85 /30 \\
-\hline
-\multirow{5}{*}{MLS4} & Port-channel 1 & 192.168.163.82 /30 \\
+\multirow{5}{*}{MLS4} 
                       & VLAN 10 & 192.168.163.2 /27 \\
                       & VLAN 20 & 192.168.163.34 /27 \\
                       & VLAN 30 & 192.168.163.66 /27 \\
                       & VLAN 40 & 192.168.162.2 /24 \\
 \hline
-\multirow{5}{*}{MLS5} & Port-channel 2 & 192.168.163.86 /30 \\
+\multirow{5}{*}{MLS5} 
                       & VLAN 10 & 192.168.163.3 /27 \\
                       & VLAN 20 & 192.168.163.35 /27 \\
                       & VLAN 30 & 192.168.163.67 /27 \\
@@ -65,7 +91,7 @@ The following command sets were applied to the core multilayer switches to estab
 \subsection{VLAN and VTP Configuration}
 
 VLAN Trunking Protocol (VTP) was configured to synchronize VLAN databases across the Warsaw switching domain.  
-All multilayer switches operate in \texttt{server} mode to ensure database consistency.
+All multilayer switches operate in \texttt{server} mode to ensure database consistency and integrity.
 
 \begin{lstlisting}[caption={VLAN and VTP configuration}, label={lst:warsaw-vtp}]
 vtp mode server
@@ -87,7 +113,7 @@ vlan 99
 ip routing
 \end{lstlisting}
 
-\subsection{Spanning Tree Protocol (RSTP) Configuration}
+\subsection{Spanning Tree Protocol \ac{STP} Configuration}
 
 Rapid Per-VLAN Spanning Tree (Rapid-PVST) was enabled to maintain a loop-free topology and to provide load balancing between core switches.
 
@@ -102,6 +128,21 @@ spanning-tree mode rapid-pvst
 spanning-tree vlan 30,40 root primary
 spanning-tree vlan 10,20 root secondary
 \end{lstlisting}
+
+\subsection{\ac{HRSP} Configuration}
+HRSP was configured on both on MLS4 and MLS5 to provide gateway redundancy for endpoint devices.The following example shows the configuration for VLAN~10 (STAFF); similar configurations were applied for all other VLANs.
+\begin{lstlisting}[caption={HRSP configuration for VLAN10 on MLS4/MLS5}, label={lst:warsaw-hrsp}]
+    
+interface vlan 10
+ ip address 192.168.163.2 255.255.255.224
+ standby 10 ip 192.168.163.1
+ standby 10 priority 110
+ standby 10 preempt
+ no shutdown
+exit
+\end{lstlisting}
+
+
 
 \subsection{DHCP Service Configuration}
 
