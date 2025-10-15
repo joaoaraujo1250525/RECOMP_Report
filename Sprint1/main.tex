@@ -1,0 +1,182 @@
+\documentclass[a4paper,12pt]{report}
+
+% Input encoding and font encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{multirow}
+
+% Mathematics and symbols
+\usepackage{amsmath,amsfonts,amssymb}
+
+% Graphics support and image formats
+\usepackage{graphicx}
+
+% Hyperlinks support (hidelinks removes link borders)
+\usepackage[hidelinks]{hyperref}
+
+% Enumeration lists customization
+\usepackage{enumitem}
+
+% Geometry settings for margins
+\usepackage{geometry}
+\geometry{margin=1in}
+
+% Table of contents and figures list formatting
+\usepackage{tocloft}
+
+% Support for long tables
+\usepackage{longtable}
+
+% Acronyms
+\usepackage{acronym}
+
+% Language and citation
+\usepackage[english]{babel}
+\usepackage[superscript]{cite}
+
+% URL formatting in the bibliography
+\usepackage{url}
+
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[utf8]{inputenc}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{caption}
+\captionsetup[table]{skip=10pt}
+\usepackage{listings}
+\lstset{
+  backgroundcolor=\color{white},
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  tabsize=2,
+  captionpos=b
+}
+\renewcommand{\lstlistlistingname}{List of Commands}
+
+
+\begin{document}
+
+% Title page
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    
+    \Huge
+    \textbf{Computer Network Project}
+    
+    \vspace{0.5cm}
+    \Large
+    Master's in Computer Engineering - Cybersecurity and Systems Administration \\
+    Computer Networks (RECOMP)
+    
+    \vspace{1.5cm}
+    
+    \vfill
+
+    % Add the logo in the middle of the page
+    \includegraphics[width=0.8\textwidth]{figures/isep_wordmark_expanded_vintage.eps}
+    
+    \vspace{10cm}
+    \small
+    \textbf{Students} \\
+    1250525@isep.ipp.pt | João Araújo \\ 
+    1200813@isep.ipp.pt | João Silva  \\
+    1200720@isep.ipp.pt | Manuela Leite \\
+   
+    
+
+    \vspace{0.5cm}
+    \small
+    \textbf{Responsible professors} \\
+    Ana Raquel Faria \\
+    Rui Filipe Marques
+    
+    \vfill
+\end{titlepage}
+
+% Table of contents, figures, and acronyms
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+\lstlistoflistings
+\renewcommand{\lstlistingname}{Code}
+% Acronyms section
+\chapter*{Acronyms}
+\begin{acronym}[XXXX] % Use [XXXX] for proper acronym alignment
+\acro{WAN}{Wide Area Network}
+\acro{HQ}{Headquarters}
+\acro{VLAN}{Virtual Local Area Network }
+\acro{HSRP}{Hot Standby Router Protocol}
+\acro{STP}{Spanning Tree Protocol}
+\acro{RSTP}{Rapid Spanning Tree Protocol}
+\acro{DHCP}{Dynamic Host Configuration Protocol}
+\acro{RECOMP}{Redes de Computadores}
+\acro{VTP}{VLAN Trunking Protocol}
+\acro{IP}{Internet Protocol}
+\acro{SVI}{Switched Virtual Interface}
+\end{acronym}
+
+\newpage
+
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+This report documents the work completed during Sprint 1 of the \ac{RECOMP} Project, which focuses on the initial configuration and verification of the \ac{RECOMP} Corporation \ac{WAN}. The network spans four geographically distributed sites: Oporto (\ac{HQ}), Warsaw, Munich, and a secure location known as The Vault, all interconnected via the Internet. The initial project state was provided through the packet trace file \texttt{Proj1-start.pkt}.
+
+During Sprint 1, the team carried out the following key activities:
+
+\begin{itemize}
+    \item Completed the startup configuration of all routers and switches, ensuring connectivity to the Service Provider network and testing access to external sites such as \texttt{www.google.com}.
+    \item Designed and implemented IP addressing schemes for each site based on the allocated address blocks:
+    \begin{itemize}
+        \item Oporto: 10.21.44.0/22
+        \item Warsaw: 192.168.162.0/23
+        \item Munich: 172.18.78.0/23
+        \item The Vault: 10.31.81.0/24
+    \end{itemize}
+    \item Configured \ac{VLAN}s, including link aggregation, trunking, and the \ac{VTP} domain across all multilayer and Layer 2 switches.
+    \item Implemented \ac{RSTP} and configured \ac{HSRP} for redundancy and high availability.
+    \item Configured \ac{DHCP} servers for all \ac{VLAN}s, ensuring that host devices could obtain \ac{IP} addresses automatically.
+    \item Verified internal connectivity at each site to confirm that all PCs and network devices were correctly configured.
+\end{itemize}
+
+The hardware and network topology at each location were as follows:
+
+\begin{itemize}
+    \item \textbf{Oporto (HQ):} 1 × 2911 router, 2 × 3560-24PS multilayer switches, 2 × 2960-24TT Layer 2 switches, and 4 PCs for STAFF, ACCOUNTING, HR, and USERS networks.
+    \item \textbf{Warsaw (BR1):} 1 × 2901 router, 3 × 3560-24PS multilayer switches, 4 × 2960-24TT Layer 2 switches, and 4 PCs per VLAN.
+    \item \textbf{Munich (BR2):} 2 × 2911 routers, 4 × 2960-24TT Layer 2 switches, and 4 PCs for various networks.
+    \item \textbf{The Vault:} 1 × 2911 router and 1 × 2960-24TT Layer 2 switch.
+\end{itemize}
+
+The work was distributed among the team as follows:
+
+\begin{itemize}
+    \item João Paulo Araujo (1250525@isep.ipp.pt) — Munich \ac{WAN}
+    \item João Silva (1200813@isep.ipp.pt) — Warsaw \ac{WAN}
+    \item Manuela Leite (1200720@isep.ipp.pt) — Oporto \ac{WAN}
+\end{itemize}
+
+This report details the implementation steps, configuration settings, and verification results achieved during Sprint 1, providing the foundation for subsequent sprints in the \ac{RECOMP} Project.
+
+\include{chapter1-opo}
+\include{chapter2-Warsaw}
+\include{chapter3-munich}
+
+\bibliographystyle{plain} % Choose the style of your references
+\bibliography{refs} % Link your .bib file here
+
+\end{document}
+
+
+
