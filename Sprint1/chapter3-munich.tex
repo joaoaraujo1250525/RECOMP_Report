@@ -218,6 +218,61 @@ exit
 
 
 \subsection{DHCP Configuration}
+In this subchapter, we will explain the DHCP configuration on the two Munich WAN routers for the VLANs of each of the two switches in this network.
+DHCP, basically, is a protocol that automatically assigns IP addresses and other network settings, (for example: gateway, DNS) to devices on a network.
+
+\vspace{0.1cm}
+\subsubsection*{BR2 Router}
+On the BR2 router, three DHCP pools were configured, corresponding to the VLANs connected to the SW7 switch: VLAN 20 (STAFF), VLAN 10 (ACCOUNTING), and VLAN 30 (HR).  
+Each pool defines a specific IP range, the respective default gateway, DNS server, and same domain name to be distributed to the hosts within that VLAN. Additionally, several IP addresses were excluded to prevent them from being assigned dynamically—typically reserved for network devices such as routers and switches.
+
+\begin{lstlisting}[caption={Exclusion of static addresses already defined to avoid errors}, label={lst:errors}]
+ip dhcp excluded-address 172.18.79.33 172.18.79.45
+ip dhcp excluded-address 172.18.79.1 172.18.79.29
+ip dhcp excluded-address 172.18.79.49 172.18.79.61
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Creation of a DHCP pool called STAFF}, label={lst:staff-pool}]
+ip dhcp pool STAFF
+ network 172.18.79.32 255.255.255.240
+ default-router 172.18.79.46
+ dns-server 8.8.8.8
+ domain-name RECOMP2526M1A06.recomp.com 
+exit
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Creation of a DHCP pool called ACCOUNTING}, label={lst:ACCOUNTING-pool}]
+ip dhcp pool ACCOUNTING
+ network 172.18.79.0 255.255.255.224
+ default-router 172.18.79.30
+ dns-server 8.8.8.8
+ domain-name RECOMP2526M1A06.recomp.com
+exit
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Creation of a DHCP pool called HR}, label={lst:HR-pool}]
+ip dhcp pool HR
+ network 172.18.79.48 255.255.255.240
+ default-router 172.18.79.62
+ dns-server 8.8.8.8
+ domain-name RECOMP2526M1A06.recomp.com
+exit
+\end{lstlisting}
+
+This configuration ensures that each VLAN has its own DHCP scope, allowing devices in each network to automatically obtain an IP address, gateway, and DNS information corresponding to their VLAN. 
+
+
+The use of excluded address ranges guarantees that static IPs assigned to infrastructure components will not conflict with dynamically assigned addresses.
+It should be noted that this DHCP configuration in Packet Tracer will have significant positive effects on PC9 (Vlan 20), PC10 (Vlan 10) and PC11 (Vlan 30).
+
+\newpage
+For example, if you look at the DHCP settings on PC9 in the following figure \ref{fig:munich_pc9}, you will see that it corresponds to Code \ref{lst:staff-pool} and that it contains exactly the assigned DNS IP (Google) and the corresponding default-gateway from the Staff Pool.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/pc9_conf_example.png}
+\caption{\label{fig:munich_pc9}Demonstration of PC9 DNS and your Default-Gateway}
+\end{figure}
 
 \subsection{IP Route Configuration}
 
