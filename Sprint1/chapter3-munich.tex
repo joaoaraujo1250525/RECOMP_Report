@@ -10,52 +10,45 @@ Munich is the other branch of the RECOMP Corporation. The network has:
 
 The topology of the Munich branch is shown in Figure \ref{fig:munichtopology}. The Munich \ac{WAN} is connected to the Internet using the address block 193.136.60.147/29.
 
-
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=0.6\textwidth]{figures/munich_topology.png}
 \caption{\label{fig:munichtopology}Munich WAN Topology}
 \end{figure}
 
-\section{Munich WAN Addressing}
 
-\begin{center}
-\setlength{\LTleft}{-1.5cm}
-\begin{longtable}{
-|>{\centering\arraybackslash}p{3cm}|
- >{\centering\arraybackslash}p{2cm}|
- >{\centering\arraybackslash}p{3cm}|
- >{\centering\arraybackslash}p{2.5cm}|
- >{\centering\arraybackslash}p{1cm}|
- >{\centering\arraybackslash}p{5cm}|}
+
+
+\section{Munich Subnet Implementation}
+
+In this subchapter, you will find the addressing for this branch in Table \ref{tab:munich-addressing}. This branch, like the previous one, contains four VLANs, each with a number of nodes, a network address, a broadcast address, a mask, and a range of addresses that can be used for each machine on the network.
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
 \hline
-\textbf{Networks} & 
-\textbf{Number of Nodes} & 
-\textbf{Network Address} & 
-\textbf{Broadcast} & 
-\textbf{Mask} & 
-\textbf{First and Last Hosts} \\ \hline
-\endfirsthead
-
+\textbf{Network} & \textbf{Number of Nodes} & \textbf{Network Address} & \textbf{Broadcast Address} & \textbf{Mask} & \textbf{First--Last Valid Address} \\
 \hline
-\textbf{Networks} & 
-\textbf{Number of Nodes} & 
-\textbf{Network Address} & 
-\textbf{Broadcast} & 
-\textbf{Mask} & 
-\textbf{First and Last Hosts} \\ \hline
-\endhead
-
-USERS & 200 & 172.18.78.0 & 172.18.78.255 & /24 & 172.18.78.1 -- 172.18.78.254 \\ \hline
-ACCOUNTING & 20 & 172.18.79.0 & 172.18.79.31 & /27 & 172.18.79.1 -- 172.18.79.30 \\ \hline
-STAFF & 10 & 172.18.79.32 & 172.18.79.47 & /28 & 172.18.79.33 -- 172.18.79.46 \\ \hline
-HR & 10 & 172.18.79.48 & 172.18.79.63 & /28 & 172.18.79.49 -- 172.18.79.62 \\ \hline
+USERS & 200 & 172.18.78.0 & 172.18.78.255 & /24 & 172.18.78.1 -- 172.18.78.254 \\
+ACCOUNTING & 20 & 172.18.79.0 & 172.18.79.31 & /27 & 172.18.79.1 -- 172.18.79.30 \\
+STAFF & 10 & 172.18.79.32 & 172.18.79.47 & /28 & 172.18.79.33 -- 172.18.79.46 \\
+HR & 10 & 172.18.79.48 & 172.18.79.63 & /28 & 172.18.79.49 -- 172.18.79.62 \\
+\hline
+\end{tabular}%
+}
+\caption{Munich \ac{WAN} \ac{IP} addressing scheme}
+\label{tab:munich-addressing}
+\end{table}
 
 
-\caption{Munich Addressing}
-\end{longtable}
-\end{center}
+As shown in Figure \ref{fig:munichaddressing}, the addressing for the Munich branch is presented.
 
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/munich_addressing.png}
+\caption{\label{fig:munichaddressing}Munich IP Addressing}
+\end{figure}
 
 \section{Implementation of Cisco Commands}
 
@@ -145,10 +138,86 @@ interface range gigabitEthernet0/2
 exit    
 \end{lstlisting}
 
-\subsection*{Router Configuration}
+\subsection{Router Configuration}
+This subsection demonstrates the configuration of two routers: BR2 and Router0 (R0).
+\vspace{0.1cm}
+\subsubsection*{BR2}
 
-\subsection*{DHCP Configuration}
+The BR2 router is connected to the internet with the IP address 193.136.60.147/29. The R0 router is connected to the BR2 router with a crossover cable.
 
-\subsection*{* Configuration}
+First, the gigabitEthernet0/0 interface was configured, connecting the BR2 router to the internet. Therefore, we have the following code:
 
-\subsection*{* Configuration}
+\begin{lstlisting}[caption={Interface GigabitEthernet0/0 Configuration}, label={lst:intf-gb0/0}]
+interface gigabitEthernet0/0
+  ip address 193.136.60.147 255.255.255.248
+  no shutdown
+exit
+\end{lstlisting}
+
+On the BR2 router, four subinterfaces were configured to handle traffic from different VLANs over a single physical interface. Each subinterface is identified by a \texttt{.} followed by the VLAN number, which allows the router to distinguish between the different VLANs. The command \texttt{encapsulation dot1q <VLAN>} specifies that 802.1Q trunking is being used, enabling the physical interface to carry traffic from multiple VLANs simultaneously.
+
+The IP addresses assigned to each subinterface allow the router to act as the default gateway for the hosts in the corresponding VLANs:
+
+\begin{itemize}
+    \item GigabitEthernet0/1.10: configured for VLAN 10 with IP address \texttt{172.18.79.46/28}. This subinterface provides routing and inter-VLAN connectivity for devices in VLAN 10.
+    \item GigabitEthernet0/1.20: configured for VLAN 20 with IP address \texttt{172.18.79.30/27}, serving as the gateway for devices in VLAN 20.
+    \item GigabitEthernet0/1.30: configured for VLAN 30 with IP address \texttt{172.18.79.62/28}, providing routing services for VLAN 30 hosts.
+    \item GigabitEthernet0/1.50: configured for VLAN 50 as the native VLAN. No IP address is assigned because this VLAN is likely used only for untagged traffic passing through the trunk, without requiring routing.
+\end{itemize}
+
+By assigning unique IP addresses to each subinterface, the router can perform inter-VLAN routing, allowing devices on different VLANs to communicate while still maintaining VLAN segmentation. This setup efficiently leverages a single physical interface to carry multiple networks, reducing hardware requirements and simplifying the network topology.
+
+\begin{lstlisting}[caption={Subinterfaces configuration on BR2 router}, label={lst:subintf-BR2}]
+interface gigabitEthernet0/1.10
+  encapsulation dot1q 10
+  ip address 172.18.79.46 255.255.255.240
+
+interface gigabitEthernet0/1.20
+  encapsulation dot1q 20
+  ip address 172.18.79.30 255.255.255.224
+
+interface gigabitEthernet0/1.30
+  encapsulation dot1q 30
+  ip address 172.18.79.62 255.255.255.240
+
+interface gigabitEthernet0/1.50
+  encapsulation dot1q 50 native
+  no ip address
+\end{lstlisting}
+
+
+Next, using the \textit{no shutdown} command, the interface connecting BR2 to SW7 was enabled.
+
+\begin{lstlisting}[caption={Turn on Interface GigabitEthernet0/1 between SW7 and BR2}, label={lst:sw7-BR2}]
+interface gigabitEthernet0/1
+  no shutdown
+exit
+\end{lstlisting}
+
+\vspace{0.1cm}
+\subsubsection*{R0}
+
+Router R0 is connected to a switch, and that switch has only one associated VLAN, that's VLAN 40, which is USERS. 
+First, the GigabitEthernet0/0 interface was configured to connect router BR2 to router R0 with the IP address 193.136.60.148/29 on R0 side.
+
+\begin{lstlisting}[caption={Interface GigabitEthernet0/0 configuration on R0}, label={lst:r0-br2connection}]
+interface gigabitEthernet0/0
+  ip address 193.136.60.148 255.255.255.248
+  no shutdown
+exit
+\end{lstlisting}
+
+Next, the interface connecting R0 to SW8 was configured. The IP address assigned in the configuration of this interface was 172.18.78.254/24.
+\begin{lstlisting}[caption={Configuring the GigabitEthernet0/1 interface on R0}, label={lst:r0-if_gb0/0}]
+interface gigabitEthernet0/1
+  ip address 172.18.78.254 255.255.255.0
+  no shutdown
+exit
+\end{lstlisting}
+
+
+
+\subsection{DHCP Configuration}
+
+\subsection{IP Route Configuration}
+
