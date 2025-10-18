@@ -17,8 +17,6 @@ The topology of the Munich branch is shown in Figure \ref{fig:munichtopology}. T
 \end{figure}
 
 
-
-
 \section{Munich Subnet Implementation}
 
 In this subchapter, you will find the addressing for this branch in Table \ref{tab:munich-addressing}. This branch, like the previous one, contains four VLANs, each with a number of nodes, a network address, a broadcast address, a mask, and a range of addresses that can be used for each machine on the network.
@@ -216,7 +214,6 @@ exit
 \end{lstlisting}
 
 
-
 \subsection{DHCP Configuration}
 In this subchapter, we will explain the DHCP configuration on the two Munich WAN routers for the VLANs of each of the two switches in this network.
 DHCP, basically, is a protocol that automatically assigns IP addresses and other network settings, (for example: gateway, DNS) to devices on a network.
@@ -276,3 +273,26 @@ For example, if you look at the DHCP settings on PC9 in the following figure \re
 
 \subsection{IP Route Configuration}
 
+In this subsection, the configuration of IP routes in packet tracer on router BR2, as well as on router R0, is demonstrated. 
+\vspace{0.1cm}
+\subsubsection*{BR2}
+
+\begin{lstlisting}[caption={IP Route Demonstration of BR2 Router}, label={lst:br2router_iproute}]
+ip route 172.18.78.0 255.255.255.0 193.136.60.148
+\end{lstlisting}
+
+In the Code \ref{lst:br2router_iproute}, it can be seen that there is an IP designated by \textit{172.18.78.0} which is the network address of router R0, followed by the network mask /24, and finally there is the IP address \textit{193.136.60.148} which is the IP of the next-hop or the IP of the neighboring router, i.e. is, the IP of Router0 where the traffic will be sent and reach the destination network.
+
+\vspace{0.1cm}
+\subsubsection*{R0}
+In this subsection, the configuration of static IP routes in Packet Tracer on Router0 is presented. 
+
+\begin{lstlisting}[caption={IP Route Demonstration of Router0}, label={lst:router0_iproute}]
+ip route 172.18.79.0 255.255.255.224 193.136.60.147
+ip route 172.18.79.32 255.255.255.240 193.136.60.147
+ip route 172.18.79.48 255.255.255.240 193.136.60.147
+\end{lstlisting}
+
+In the Code \ref{lst:router0_iproute}, it can be observed that three static routes are configured on Router0. The first route defines the network \textit{172.18.79.0/27}, the second route defines the network \textit{172.18.79.32/28}, and the third route defines the network \textit{172.18.79.48/28}. All these networks are reachable through the next-hop IP address \textit{193.136.60.147}, which corresponds to the neighboring router BR2. 
+
+Therefore, these static routes allow Router0 to forward traffic destined for the mentioned networks through BR2, ensuring proper communication between the subnets and the rest of the topology.
