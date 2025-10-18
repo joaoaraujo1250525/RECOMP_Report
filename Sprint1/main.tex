@@ -173,6 +173,23 @@ This report details the implementation steps, configuration settings, and verifi
 \include{chapter2-Warsaw}
 \include{chapter3-munich}
 
+\chapter{Conclusion}
+
+The development of RECOMP Corporation's WAN during Sprint 1 represented a crucial milestone in establishing a functional, scalable, and secure network infrastructure, interconnecting the company's three main facilities — Porto (headquarters), Warsaw, and Munich. Throughout this phase, key objectives were successfully achieved, including the design and implementation of IP addressing schemes, the configuration of VLANs and VTP domains, the deployment of redundancy protocols, and the validation of internal and external connectivity.
+
+At the Porto headquarters, the configuration of multilayer switching, VLAN segmentation, and redundancy protocols such as HSRP ensured high availability and resilience against potential network failures. The use of VTP and DHCP services further simplified network management and automation.
+
+In Warsaw, the implementation of a structured subnet plan and the correct configuration of redundancy mechanisms such as HSRP ensured seamless gateway failover and optimised routing performance. The implementation of DHCP pools for each VLAN confirmed proper network segmentation and automated address management.
+
+Similarly, in Munich, routing between VLANs, trunking, and DHCP configuration were successfully implemented, ensuring connectivity between departments and between networks through static routing. The logical separation of VLANs and the configuration of subinterfaces on the routers enabled efficient communication between all networks on different VLANs.
+ 
+This first sprint laid the foundation for RECOMP Corporation's enterprise network. Each site now operates with a consistent addressing scheme and stable connectivity to the Internet and between each machine (e.g., PCs) on each WAN.
+
+
+
+Finally, all objectives set for Sprint 1 were fully achieved. RECOMP's WAN is now operational and ready for the next phases of development.
+
+
 \bibliographystyle{plain} % Choose the style of your references
 \bibliography{refs} % Link your .bib file here
 
